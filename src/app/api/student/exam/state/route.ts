@@ -133,7 +133,8 @@ export async function GET() {
     attempt = created;
   }
 
-  const startedAt = new Date(attempt.started_at);
+if (!attempt) return new NextResponse("Attempt not found", { status: 500 });
+    const startedAt = new Date(attempt.started_at);
   const expiresAt = new Date(startedAt.getTime() + durationMinutes * 60 * 1000);
   const remainingMs = Math.max(0, expiresAt.getTime() - now.getTime());
   const timeUp = remainingMs <= 0;
