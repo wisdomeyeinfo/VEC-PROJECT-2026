@@ -56,5 +56,4 @@ export async function updateStudentProfile(formData: FormData) {
 
   revalidatePath("/student");
   revalidatePath("/student/profile");
-  return { success: true };
 }
