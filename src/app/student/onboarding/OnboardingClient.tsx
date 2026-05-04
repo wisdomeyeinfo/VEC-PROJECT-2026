@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect, useMemo } from "react";
 import { completeOnboarding } from "../login/actions";
+import { LANGUAGE_OPTIONS } from "@/lib/lang";
 import { 
   ShieldCheck, 
   School, 
@@ -27,9 +28,6 @@ interface Props {
   availableSchools: { id: string; name: string; district: string; state: string }[];
 }
 
-const LANGUAGES = [
-  "English", "Marathi", "Hindi", "Gujrati", "Tamil", "Bengali", "Kannada"
-];
 
 const STANDARDS = Array.from({ length: 10 }, (_, i) => i + 3); // 3 to 12
 
@@ -46,6 +44,7 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
     email: initialData?.email || "",
     newPassword: "",
     schoolName: initialData?.school_name || "",
+    schoolId: initialData?.school_id || "",
     state: initialData?.state || "",
     district: initialData?.district || "",
     standard: initialData?.class || "",
@@ -61,12 +60,12 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
   
   const districts = useMemo(() => {
     if (!formDataState.state) return [];
-    return Array.from(new Set(availableLocations.filter(l => l.state === formDataState.state).map(l => l.district))).sort();
+    return Array.from(new Set(availableLocations.filter(l => l.state.toLowerCase() === formDataState.state.toLowerCase()).map(l => l.district))).sort();
   }, [formDataState.state, availableLocations]);
 
   const filteredSchools = useMemo(() => {
     if (!formDataState.district) return [];
-    return availableSchools.filter(s => s.district === formDataState.district && s.state === formDataState.state).sort((a, b) => a.name.localeCompare(b.name));
+    return availableSchools.filter(s => s.district.toLowerCase() === formDataState.district.toLowerCase() && s.state.toLowerCase() === formDataState.state.toLowerCase()).sort((a, b) => a.name.localeCompare(b.name));
   }, [formDataState.district, formDataState.state, availableSchools]);
 
   // Real-time password validation
@@ -84,10 +83,20 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
       // Reset dependent fields
       if (name === "state") {
         newState.district = "";
+        newState.schoolId = "";
         newState.schoolName = "";
       }
       if (name === "district") {
+        newState.schoolId = "";
         newState.schoolName = "";
+      }
+      if (name === "schoolId") {
+        if (value === "Other") {
+          newState.schoolName = "Other";
+        } else {
+          const s = availableSchools.find(sch => sch.id === value);
+          newState.schoolName = s ? s.name : "";
+        }
       }
       return newState;
     });
@@ -261,17 +270,18 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
               <School className="h-3 w-3" /> School Name
             </label>
             <select
-              name="schoolName"
-              value={formDataState.schoolName}
-              onChange={(e) => updateField("schoolName", e.target.value)}
+              name="schoolId"
+              value={formDataState.schoolId}
+              onChange={(e) => updateField("schoolId", e.target.value)}
               disabled={!formDataState.district}
               required
               className="block w-full h-14 px-4 rounded-xl border-2 border-zinc-100 bg-zinc-50/50 font-bold focus:bg-white focus:border-orange-500 transition-all outline-none appearance-none disabled:opacity-50"
             >
               <option value="">Select Your School</option>
-              {filteredSchools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+              {filteredSchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
               <option value="Other">Other / Not Listed</option>
             </select>
+            <input type="hidden" name="schoolName" value={formDataState.schoolName} />
             {formDataState.schoolName === "Other" && (
               <input 
                 name="schoolNameOther"
@@ -362,8 +372,8 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
                 className="block w-full h-14 px-4 rounded-xl border-2 border-zinc-100 bg-zinc-50/50 font-bold focus:bg-white focus:border-orange-500 transition-all outline-none appearance-none"
               >
                 <option value="">Select Language</option>
-                {LANGUAGES.map(l => (
-                  <option key={l} value={l}>{l}</option>
+                {LANGUAGE_OPTIONS.map((l) => (
+                  <option key={l.value} value={l.value}>{l.label}</option>
                 ))}
               </select>
             </div>

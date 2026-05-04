@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getStudentSession } from "@/lib/student/session";
 import { mulberry32, shuffleInPlace } from "@/lib/exam/random";
+import { normalizeLang } from "@/lib/lang";
 
 async function getQuestionIdsForSet(admin: ReturnType<typeof createSupabaseAdminClient>, language: string, type: string) {
   const { data: setRow, error: setErr } = await admin
@@ -71,19 +72,22 @@ export async function GET() {
     const seedNum = parseInt(seed.slice(0, 8), 16) >>> 0;
     const rand = mulberry32(seedNum);
 
-    const fixedIds = await getQuestionIdsForSet(admin, student.language, "fixed100");
-    const extraIds = await getQuestionIdsForSet(admin, student.language, "extra50");
+    // Normalize DB language value (e.g. "English", "en", "Gujrati" → "English")
+    const lang = normalizeLang(student.language);
+
+    const fixedIds = await getQuestionIdsForSet(admin, lang, "fixed100");
+    const extraIds = await getQuestionIdsForSet(admin, lang, "extra50");
 
     if (fixedIds.length < 100) {
       return NextResponse.json({
         enabled: false,
-        reason: `Not enough fixed questions for ${student.language} (need 100).`,
+        reason: `Not enough fixed questions for ${lang} (need 100).`,
       });
     }
     if (extraIds.length < 20) {
       return NextResponse.json({
         enabled: false,
-        reason: `Not enough extra questions for ${student.language} (need at least 20).`,
+        reason: `Not enough extra questions for ${lang} (need at least 20).`,
       });
     }
 

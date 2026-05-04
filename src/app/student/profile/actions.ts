@@ -13,7 +13,7 @@ export async function updateStudentProfile(formData: FormData) {
   const class_name = formData.get("class") as string;
   const division = formData.get("division") as string;
   const mobile = formData.get("mobile") as string;
-  const custom_school_name = formData.get("custom_school_name") as string;
+  const school_name = formData.get("school_name") as string;
 
   const admin = createSupabaseAdminClient();
   
@@ -33,7 +33,8 @@ export async function updateStudentProfile(formData: FormData) {
       .update({
         ...payload,
         gender,
-        custom_school_name: custom_school_name || null
+        school_name: school_name || null,
+        custom_school_name: school_name || null
       })
       .eq("id", session.student_id);
 

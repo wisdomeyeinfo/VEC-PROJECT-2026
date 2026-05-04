@@ -68,6 +68,7 @@ export async function completeOnboarding(formData: FormData) {
   const email = String(formData.get("email") || "").trim();
   const state = String(formData.get("state") || "").trim();
   const district = String(formData.get("district") || "").trim();
+  const schoolId = String(formData.get("schoolId") || "").trim();
   let schoolName = String(formData.get("schoolName") || "").trim();
   const schoolNameOther = String(formData.get("schoolNameOther") || "").trim();
 
@@ -96,6 +97,7 @@ export async function completeOnboarding(formData: FormData) {
       name,
       gender,
       email,
+      school_id: schoolId === "Other" || !schoolId ? null : schoolId,
       school_name: schoolName,
       state,
       district,

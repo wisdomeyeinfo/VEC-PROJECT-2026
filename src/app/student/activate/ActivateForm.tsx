@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Users
 } from "lucide-react";
+import { LANGUAGE_OPTIONS } from "@/lib/lang";
 
 type SchoolOption = { id: string; name: string; district: string };
 type CodeStatus = "loading" | "idle" | "unused" | "redeemed" | "revoked" | "invalid";
@@ -257,11 +258,9 @@ export function ActivateForm() {
                 defaultValue=""
               >
                 <option value="" disabled>Select language</option>
-                <option value="en">English</option>
-                <option value="hi">Hindi</option>
-                <option value="mr">Marathi</option>
-                <option value="bn">Bengali</option>
-                <option value="gu">Gujarati</option>
+                {LANGUAGE_OPTIONS.map(l => (
+                  <option key={l.value} value={l.value}>{l.label}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">

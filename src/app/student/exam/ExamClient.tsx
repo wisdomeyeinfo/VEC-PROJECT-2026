@@ -58,7 +58,6 @@ export function ExamClient() {
       const body = (await res.json()) as ExamState;
       setState(body);
       
-      // Auto-jump to first unanswered question
       if (body.enabled && body.questions?.length) {
         const firstUnanswered = body.questions.findIndex(q => !body.answers?.[q.id]);
         if (firstUnanswered !== -1) setCurrentIdx(firstUnanswered);
@@ -74,14 +73,12 @@ export function ExamClient() {
     load();
   }, []);
 
-  // Track visited questions
   useEffect(() => {
     if (state?.enabled && state.questions?.[currentIdx]) {
       setVisited(prev => new Set(prev).add(state.questions[currentIdx].id));
     }
   }, [currentIdx, state]);
 
-  // Tick down remaining time
   useEffect(() => {
     if (!state || !state.enabled || !state.attempt) return;
     if (state.attempt.status === "submitted") return;
@@ -171,20 +168,20 @@ export function ExamClient() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 space-y-4">
-        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <p className="text-zinc-500 font-black uppercase tracking-widest text-xs">Loading Professional Exam Interface...</p>
+      <div className="flex flex-col items-center justify-center py-20 md:py-32 space-y-4">
+        <Loader2 className="h-10 w-10 md:h-12 md:w-12 text-primary animate-spin" />
+        <p className="text-secondary/40 font-black uppercase tracking-widest text-[8px] md:text-xs">Loading Secure Environment...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-[2rem] border-2 border-red-100 bg-red-50 p-8 text-center space-y-4">
-        <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-        <h2 className="font-black text-red-900 text-xl">System Error</h2>
-        <p className="text-red-700 text-sm font-medium">{error}</p>
-        <button onClick={load} className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold text-sm shadow-lg shadow-red-600/20">Reload</button>
+      <div className="rounded-3xl border-2 border-red-100 bg-red-50 p-6 md:p-8 text-center space-y-4">
+        <AlertCircle className="h-10 w-10 md:h-12 md:w-12 text-red-500 mx-auto" />
+        <h2 className="font-black text-red-900 text-lg md:text-xl uppercase">System Error</h2>
+        <p className="text-red-700 text-xs md:text-sm font-medium">{error}</p>
+        <button onClick={load} className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold text-xs uppercase tracking-widest shadow-lg">Retry Connection</button>
       </div>
     );
   }
@@ -193,11 +190,11 @@ export function ExamClient() {
 
   if (!state.enabled) {
     return (
-      <div className="rounded-[2.5rem] bg-white p-12 text-center space-y-6 shadow-xl border border-zinc-100">
-        <Trophy className="h-16 w-16 text-orange-600 mx-auto" />
-        <h2 className="text-3xl font-black text-zinc-900">Exam Unavailable</h2>
-        <p className="text-zinc-500 font-medium">{state.reason}</p>
-        <Link href="/student" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-zinc-900 text-white font-black text-lg">
+      <div className="rounded-[2.5rem] bg-white p-8 md:p-12 text-center space-y-6 shadow-xl border border-orange-50">
+        <Trophy className="h-12 w-12 md:h-16 md:w-16 text-primary mx-auto" />
+        <h2 className="text-2xl md:text-3xl font-black text-secondary italic tracking-tighter">Quest Unavailable</h2>
+        <p className="text-sm md:text-base text-secondary/50 font-medium">{state.reason}</p>
+        <Link href="/student" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-secondary text-white font-black text-sm md:text-lg shadow-xl shadow-secondary/20">
           <Home className="h-5 w-5" /> Back Home
         </Link>
       </div>
@@ -210,54 +207,49 @@ export function ExamClient() {
 
   if (state.attempt?.status === "submitted") {
     return (
-      <div className="rounded-[3rem] bg-zinc-900 p-12 text-center space-y-8 shadow-2xl overflow-hidden relative">
+      <div className="rounded-[2.5rem] md:rounded-[3rem] bg-secondary p-8 md:p-12 text-center space-y-6 md:space-y-8 shadow-2xl overflow-hidden relative">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-orange-500 to-accent" />
-        <CheckCircle2 className="h-20 w-20 text-primary mx-auto animate-bounce-subtle" />
+        <CheckCircle2 className="h-16 w-16 md:h-20 md:w-20 text-primary mx-auto animate-bounce-subtle" />
         <div className="space-y-2">
-          <h2 className="text-4xl font-black text-white">Submission Successful!</h2>
-          <p className="text-zinc-400 text-lg">Your exam has been recorded. Good luck with the results!</p>
+          <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">Quest Completed!</h2>
+          <p className="text-sm md:text-lg text-white/40 font-medium">Your wisdom has been recorded. Good luck with the results!</p>
         </div>
-        <Link href="/student" className="inline-flex items-center gap-2 px-10 py-5 rounded-[2rem] bg-primary text-white font-black text-xl">
-          <Home className="h-6 w-6" /> Back to Dashboard
+        <Link href="/student" className="inline-flex items-center gap-2 px-8 md:px-10 py-4 md:py-5 rounded-2xl md:rounded-[2rem] bg-primary text-white font-black text-base md:text-xl shadow-xl shadow-primary/20">
+          <Home className="h-5 w-5 md:h-6 md:w-6" /> Back to Dashboard
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto items-start relative pb-32 lg:pb-0">
+    <div className="flex flex-col lg:flex-row gap-6 md:gap-8 max-w-7xl mx-auto items-start relative pb-20 lg:pb-0">
       
       {/* Question Palette Drawer (Mobile) / Sidebar (Desktop) */}
-      <aside className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transition-transform duration-300 lg:static lg:translate-x-0 lg:shadow-none lg:border lg:border-zinc-100 lg:rounded-[2.5rem] lg:w-96 flex flex-col ${showPalette ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
+      <aside className={`fixed inset-y-0 right-0 z-[60] w-72 md:w-80 bg-white shadow-2xl transition-transform duration-300 lg:static lg:translate-x-0 lg:shadow-none lg:border lg:border-orange-50 lg:rounded-[2.5rem] lg:w-96 flex flex-col ${showPalette ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="p-5 md:p-6 border-b border-orange-50 flex items-center justify-between bg-zinc-50 lg:bg-transparent">
           <div className="flex items-center gap-2">
             <LayoutGrid className="h-5 w-5 text-primary" />
-            <span className="font-black text-zinc-800 uppercase tracking-tighter">Question Palette</span>
+            <span className="font-black text-secondary uppercase tracking-tighter text-sm">Quest Map</span>
           </div>
-          <button onClick={() => setShowPalette(false)} className="lg:hidden p-2 text-zinc-400 hover:text-red-500">
+          <button onClick={() => setShowPalette(false)} className="lg:hidden p-2 text-secondary/20 hover:text-red-500 transition-colors">
             <X className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="p-6 flex-1 overflow-y-auto space-y-6">
+        <div className="p-5 md:p-6 flex-1 overflow-y-auto space-y-6">
           {/* Stats Section */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-2xl bg-green-50 border border-green-100">
-              <p className="text-[10px] font-black text-green-600 uppercase">Answered</p>
-              <p className="text-xl font-black text-green-900">{answeredCount}</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-orange-50 border border-orange-100">
-              <p className="text-[10px] font-black text-orange-600 uppercase">Skipped</p>
-              <p className="text-xl font-black text-orange-900">{Math.max(0, skippedCount)}</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-zinc-50 border border-zinc-100">
-              <p className="text-[10px] font-black text-zinc-400 uppercase">Not Visited</p>
-              <p className="text-xl font-black text-zinc-900">{total - visited.size}</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
-              <p className="text-[10px] font-black text-primary uppercase">Total</p>
-              <p className="text-xl font-black text-primary">{total}</p>
-            </div>
+          <div className="grid grid-cols-2 gap-2 md:gap-3">
+            {[
+              { label: "Done", val: answeredCount, bg: "bg-green-50", text: "text-green-600", border: "border-green-100" },
+              { label: "Skipped", val: Math.max(0, skippedCount), bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" },
+              { label: "Remaining", val: total - visited.size, bg: "bg-zinc-50", text: "text-zinc-400", border: "border-zinc-100" },
+              { label: "Total", val: total, bg: "bg-primary/5", text: "text-primary", border: "border-primary/10" }
+            ].map((stat, i) => (
+              <div key={i} className={`p-2.5 md:p-3 rounded-xl md:rounded-2xl ${stat.bg} border ${stat.border}`}>
+                <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest text-secondary/30 mb-0.5">{stat.label}</p>
+                <p className={`text-base md:text-xl font-black italic tracking-tighter ${stat.text}`}>{stat.val}</p>
+              </div>
+            ))}
           </div>
 
           {/* Question Grid */}
@@ -267,10 +259,10 @@ export function ExamClient() {
               const isAnswered = !!state.answers?.[q.id];
               const isVisited = visited.has(q.id);
 
-              let statusColor = "bg-zinc-50 border-zinc-100 text-zinc-400 hover:border-zinc-300";
-              if (isAnswered) statusColor = "bg-green-500 border-green-600 text-white shadow-md shadow-green-200";
-              else if (isVisited) statusColor = "bg-orange-500 border-orange-600 text-white shadow-md shadow-orange-200";
-              if (isCurrent) statusColor = "bg-primary border-primary text-white shadow-xl shadow-primary/30 ring-4 ring-primary/20";
+              let statusColor = "bg-zinc-50 border-zinc-100 text-zinc-300 hover:border-orange-200";
+              if (isAnswered) statusColor = "bg-green-500 border-green-600 text-white shadow-sm shadow-green-100";
+              else if (isVisited) statusColor = "bg-orange-400 border-orange-500 text-white shadow-sm shadow-orange-100";
+              if (isCurrent) statusColor = "bg-primary border-primary text-white shadow-lg shadow-primary/20 ring-4 ring-primary/10";
 
               return (
                 <button
@@ -279,7 +271,7 @@ export function ExamClient() {
                     setCurrentIdx(i);
                     if (window.innerWidth < 1024) setShowPalette(false);
                   }}
-                  className={`h-10 w-full rounded-xl border-2 flex items-center justify-center font-black text-sm transition-all active:scale-90 ${statusColor}`}
+                  className={`h-9 md:h-10 w-full rounded-lg md:rounded-xl border flex items-center justify-center font-black text-xs md:text-sm transition-all active:scale-90 ${statusColor}`}
                 >
                   {i + 1}
                 </button>
@@ -289,37 +281,37 @@ export function ExamClient() {
         </div>
 
         {/* Action Button */}
-        <div className="p-6 border-t border-zinc-100">
+        <div className="p-5 md:p-6 border-t border-orange-50">
           <button
             onClick={submit}
             disabled={saving}
-            className="w-full h-14 rounded-2xl bg-zinc-900 text-white font-black text-lg shadow-xl hover:bg-black transition-all flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-xl md:rounded-2xl bg-secondary text-white font-black text-sm md:text-base shadow-xl shadow-secondary/10 hover:bg-black transition-all flex items-center justify-center gap-2 group uppercase tracking-widest"
           >
-            <Send className="h-5 w-5" /> Submit Exam
+            <Send className="h-4 w-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /> Finish Quest
           </button>
         </div>
       </aside>
 
       {/* Main Examination Area */}
-      <main className="flex-1 space-y-6 w-full">
+      <main className="flex-1 space-y-4 md:space-y-6 w-full">
         {/* Sticky Header with Timer */}
-        <div className="sticky top-20 z-30 flex items-center justify-between bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-zinc-100 shadow-xl shadow-zinc-200/50">
-          <div className="flex items-center gap-4">
+        <div className="sticky top-[72px] md:top-24 z-30 flex items-center justify-between bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border border-orange-50 shadow-xl shadow-orange-900/5">
+          <div className="flex items-center gap-3 md:gap-4">
             <button 
               onClick={() => setShowPalette(true)}
-              className="lg:hidden p-3 rounded-xl bg-primary text-white shadow-lg"
+              className="lg:hidden h-10 w-10 rounded-lg md:rounded-xl bg-primary text-white shadow-lg flex items-center justify-center"
             >
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Contest Mode</span>
-              <span className="font-black text-zinc-800">Question {currentIdx + 1} of {total}</span>
+              <span className="text-[7px] md:text-[9px] font-black text-secondary/30 uppercase tracking-[0.2em] leading-none mb-1">Current Progress</span>
+              <span className="font-black text-secondary text-xs md:text-base italic tracking-tight">Q{currentIdx + 1} <span className="text-secondary/20">/</span> {total}</span>
             </div>
           </div>
 
-          <div className={`flex items-center gap-3 px-6 py-2 rounded-2xl border-2 transition-colors ${remainingTime.isLow ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-white border-zinc-100'}`}>
-            <Timer className={`h-5 w-5 ${remainingTime.isLow ? 'text-red-600' : 'text-primary'}`} />
-            <span className={`font-mono font-black text-xl ${remainingTime.isLow ? 'text-red-600' : 'text-zinc-800'}`}>
+          <div className={`flex items-center gap-2 md:gap-3 px-4 md:px-6 py-1.5 md:py-2 rounded-xl md:rounded-2xl border-2 transition-all ${remainingTime.isLow ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-orange-50/30 border-orange-100'}`}>
+            <Timer className={`h-4 w-4 md:h-5 md:w-5 ${remainingTime.isLow ? 'text-red-600' : 'text-primary'}`} />
+            <span className={`font-mono font-black text-lg md:text-xl ${remainingTime.isLow ? 'text-red-600' : 'text-secondary'}`}>
               {remainingTime.h}:{remainingTime.m}:{remainingTime.s}
             </span>
           </div>
@@ -328,61 +320,61 @@ export function ExamClient() {
         {/* Question Display Card */}
         {current && (
           <div className="relative animate-in slide-in-from-right-4 duration-300">
-            <div className="p-8 md:p-12 rounded-[3rem] bg-white border border-zinc-100 shadow-2xl space-y-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest">
-                  <HelpCircle className="h-4 w-4" /> Professional Evaluation
+            <div className="p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] bg-white border border-orange-50 shadow-3xl space-y-6 md:space-y-10">
+              <div className="space-y-3 md:space-y-4">
+                <div className="flex items-center gap-2 text-primary font-black uppercase text-[8px] md:text-[10px] tracking-[0.2em]">
+                  <HelpCircle className="h-3 w-3 md:h-4 md:w-4" /> Academic Assessment
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-zinc-900 leading-tight">
+                <h2 className="text-xl md:text-3xl font-black text-secondary leading-tight italic tracking-tighter">
                   {current.question_text}
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {current.options.map((opt, i) => {
                   const isSelected = state.answers?.[current.id] === i;
                   return (
                     <button
                       key={i}
                       onClick={() => choose(current.id, i)}
-                      className={`group relative h-20 px-6 rounded-2xl border-2 flex items-center gap-4 transition-all active:scale-95 ${
+                      className={`group relative h-auto min-h-[4rem] md:min-h-[5rem] px-5 py-3 rounded-xl md:rounded-2xl border-2 flex items-center gap-4 transition-all active:scale-95 ${
                         isSelected 
                           ? "border-primary bg-primary text-white shadow-xl shadow-primary/20" 
-                          : "border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700"
+                          : "border-orange-50 hover:border-orange-200 hover:bg-orange-50/30 text-secondary/70"
                       }`}
                     >
-                      <div className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center font-black transition-colors ${
-                        isSelected ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500"
+                      <div className={`h-8 w-8 md:h-10 md:w-10 shrink-0 rounded-lg md:rounded-xl flex items-center justify-center font-black transition-colors shadow-sm ${
+                        isSelected ? "bg-white/20 text-white" : "bg-orange-50 text-primary"
                       }`}>
                         {String.fromCharCode(65 + i)}
                       </div>
-                      <span className="font-bold text-lg text-left line-clamp-2">{opt}</span>
+                      <span className="font-bold text-sm md:text-lg text-left leading-snug">{opt}</span>
                     </button>
                   );
                 })}
               </div>
 
               {/* Navigation Bar */}
-              <div className="flex items-center justify-between pt-8 border-t border-zinc-100">
+              <div className="flex items-center justify-between pt-6 md:pt-8 border-t border-orange-50 gap-4">
                 <button
                   disabled={currentIdx === 0}
                   onClick={() => setCurrentIdx(i => i - 1)}
-                  className="h-14 px-8 rounded-2xl bg-zinc-100 text-zinc-500 font-black text-sm flex items-center gap-2 hover:bg-zinc-200 disabled:opacity-30 transition-all active:scale-95"
+                  className="h-12 md:h-14 px-5 md:px-8 rounded-xl md:rounded-2xl bg-orange-50 text-primary font-black text-[10px] md:text-sm uppercase tracking-widest flex items-center gap-2 hover:bg-orange-100 disabled:opacity-30 transition-all active:scale-95"
                 >
-                  <ChevronLeft className="h-5 w-5" /> Previous
+                  <ChevronLeft className="h-4 w-4" /> Prev
                 </button>
 
-                <div className="flex items-center gap-2">
-                  {saving && <Loader2 className="h-5 w-5 text-primary animate-spin" />}
-                  <span className="hidden md:inline text-[10px] font-black text-zinc-300 uppercase tracking-widest">Auto-Saving enabled</span>
+                <div className="hidden sm:flex items-center gap-2">
+                  {saving && <Loader2 className="h-4 w-4 text-primary animate-spin" />}
+                  <span className="text-[7px] font-black text-secondary/20 uppercase tracking-[0.2em]">Auto-Save Active</span>
                 </div>
 
                 <button
                   disabled={currentIdx === total - 1}
                   onClick={() => setCurrentIdx(i => i + 1)}
-                  className="h-14 px-8 rounded-2xl bg-zinc-900 text-white font-black text-sm flex items-center gap-2 hover:bg-black disabled:opacity-30 transition-all active:scale-95"
+                  className="h-12 md:h-14 px-5 md:px-8 rounded-xl md:rounded-2xl bg-secondary text-white font-black text-[10px] md:text-sm uppercase tracking-widest flex items-center gap-2 hover:bg-black shadow-lg shadow-secondary/10 disabled:opacity-30 transition-all active:scale-95"
                 >
-                  Next Question <ChevronRight className="h-5 w-5" />
+                  Next <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -390,12 +382,12 @@ export function ExamClient() {
         )}
 
         {/* Legend / Info */}
-        <div className="p-6 rounded-[2rem] bg-blue-50 border border-blue-100 flex items-start gap-4">
-          <Info className="h-6 w-6 text-blue-500 shrink-0" />
+        <div className="p-5 md:p-6 rounded-2xl md:rounded-[2.5rem] bg-teal-50/50 border border-teal-100/50 flex items-start gap-4">
+          <Info className="h-5 w-5 md:h-6 md:w-6 text-teal-600 shrink-0" />
           <div className="space-y-1">
-            <p className="text-xs font-black text-blue-900 uppercase tracking-widest">Exam Instructions</p>
-            <p className="text-xs text-blue-700 leading-relaxed font-medium">
-              Click on an option to select it. Your answer is saved instantly. You can jump to any question using the side palette. Green numbers are answered, Orange are visited but skipped.
+            <p className="text-[8px] md:text-[10px] font-black text-teal-900 uppercase tracking-widest">Assessment Protocol</p>
+            <p className="text-[10px] md:text-xs text-teal-700/70 leading-relaxed font-medium">
+              Click on an option to select it. Your answer is encrypted and saved instantly. You can jump to any question using the Quest Map. Green status indicates a saved response.
             </p>
           </div>
         </div>
@@ -404,7 +396,7 @@ export function ExamClient() {
       {/* Backdrop for mobile palette */}
       {showPalette && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-secondary/20 backdrop-blur-sm z-[55] lg:hidden animate-in fade-in duration-300"
           onClick={() => setShowPalette(false)}
         />
       )}

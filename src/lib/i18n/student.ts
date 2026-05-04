@@ -1,4 +1,27 @@
-type Lang = "en" | "hi" | "mr" | "bn" | "gu";
+type Lang = "en" | "hi" | "mr" | "bn" | "gu" | "ta" | "kn";
+
+/** Map full DB language names → short codes */
+const LANG_MAP: Record<string, Lang> = {
+  english:  "en",
+  hindi:    "hi",
+  marathi:  "mr",
+  gujarati: "gu",
+  gujrati:  "gu", // DB typo variant
+  tamil:    "ta",
+  bengali:  "bn",
+  kannada:  "kn",
+};
+
+function resolveCode(raw: string | null | undefined): Lang {
+  if (!raw) return "en";
+  const lower = raw.toLowerCase().trim();
+  // Already a short code?
+  if (lower in dict) return lower as Lang;
+  // Full language name?
+  return LANG_MAP[lower] ?? "en";
+}
+
+
 
 const dict: Record<Lang, Record<string, string>> = {
   en: {
@@ -81,9 +104,11 @@ const dict: Record<Lang, Record<string, string>> = {
     hallOfFame: "સફળતા કેન્દ્ર",
     dailyWisdom: "આજનો સુવિચાર",
   },
+  ta: {},
+  kn: {},
 };
 
-export function t(lang: string | null | undefined, key: string) {
-  const l = (lang || "en") as Lang;
+export function t(lang: string | null | undefined, key: string): string {
+  const l = resolveCode(lang);
   return dict[l]?.[key] ?? dict.en[key] ?? key;
 }

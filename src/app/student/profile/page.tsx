@@ -155,8 +155,8 @@ export default async function StudentProfilePage() {
                 <School className="h-3 w-3" /> School Name
               </label>
               <input
-                name="custom_school_name"
-                defaultValue={student.custom_school_name || ""}
+                name="school_name"
+                defaultValue={student.school_name || student.custom_school_name || ""}
                 className="w-full h-16 px-8 rounded-3xl bg-zinc-50 border-none focus:ring-2 focus:ring-primary outline-none font-black text-xl text-zinc-800 transition-all shadow-inner"
                 placeholder="Update your school name"
               />
