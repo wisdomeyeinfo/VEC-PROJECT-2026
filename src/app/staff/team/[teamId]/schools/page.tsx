@@ -11,7 +11,8 @@ import {
   Calendar,
   Building2,
   PhoneCall,
-  Search
+  Search,
+  AlertCircle
 } from "lucide-react";
 
 export default async function TeamSchoolsPage({

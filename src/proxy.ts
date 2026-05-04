@@ -6,7 +6,7 @@ function isProtectedStaffPath(pathname: string) {
   return pathname !== "/staff/login";
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -42,4 +42,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/staff/:path*"],
 };
-

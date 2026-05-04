@@ -123,7 +123,7 @@ export async function GET() {
     }
 
     const attemptQuestions = selected.map((question_id, idx) => ({
-      attempt_id: created.id,
+      attempt_id: created!.id,
       question_id,
       position: idx,
     }));

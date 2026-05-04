@@ -44,7 +44,6 @@ export async function generateStudents(formData: FormData) {
   }
 
   revalidatePath("/staff/central/students");
-  return { success: true, count };
 }
 
 /**
@@ -66,7 +65,6 @@ export async function resetStudentPassword(studentId: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/staff/central/students");
-  return { success: true, newTempPassword };
 }
 
 /**
