@@ -1,0 +1,17 @@
+{
+  "name": "VEC 2026",
+  "short_name": "VEC",
+  "description": "ISKCON Value Education Contest",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDFCF8",
+  "theme_color": "#FF8C00",
+  "icons": [
+    {
+      "src": "/assets/hero.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

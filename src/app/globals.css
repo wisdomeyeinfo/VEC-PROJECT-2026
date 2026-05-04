@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #F6993F; /* Professional Orange */
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #5A2D0C; /* Deep Brown */
+  --color-secondary-foreground: #ffffff;
+  --color-accent: #3490DC; /* Trust Blue */
+  --color-success: #27AE60;
+  --color-danger: #E74C3C;
+  
+  --font-sans: 'Outfit', var(--font-outfit), ui-sans-serif, system-ui;
+  
+  --radius-xl: 1.25rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 3rem;
+
+  --animate-bounce-subtle: bounce-subtle 3s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 4s ease-in-out infinite;
+
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(5px, -10px); }
+    66% { transform: translate(-5px, -5px); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(0.98); }
+  }
+}
+
+@layer base {
+  :root {
+    --background: #FCFBFA; /* Warm Cream */
+    --foreground: #2D1A0A; /* Dark Brown Tinted Foreground */
+    --card: #FFFFFF;
+    --card-foreground: #2D1A0A;
+    --border: #F1E9E2;
+    --ring: #F6993F;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tight text-secondary;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl shadow-orange-900/5;
+  }
+  
+  .glass-dark {
+    @apply bg-secondary/90 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-[#FB923C] to-orange-600;
+  }
+
+  .card-premium {
+    @apply bg-white border border-orange-100 shadow-xl shadow-orange-900/5 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
