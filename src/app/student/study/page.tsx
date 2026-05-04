@@ -39,7 +39,7 @@ export default async function StudentStudyPage() {
       description: "Learn the core values and moral principles that build strong character. Essential for the national assessment.",
       type: "book",
       url: "#",
-      thumbnail_url: "/assets/study_modules_art.png",
+      thumbnail_url: "/assets/study_art.png",
       category: "Module 1"
     },
     {
@@ -65,7 +65,7 @@ export default async function StudentStudyPage() {
   const displayMaterials = materials.length > 0 ? materials : demoMaterials;
 
   return (
-    <div className="relative min-h-dvh bg-[#FCFBFA] selection:bg-primary/30 pb-20 md:pb-32">
+    <div className="relative min-h-dvh bg-[#FCFBFA] selection:bg-primary/30 pb-20 md:pb-32 overflow-x-hidden">
       {/* Background Accents */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 right-0 w-[80%] md:w-[50%] h-[50%] rounded-full bg-primary/5 blur-[80px] md:blur-[120px]" />
@@ -74,17 +74,17 @@ export default async function StudentStudyPage() {
 
       {/* Header */}
       <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-orange-100">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-4">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
             <Link 
               href="/student" 
-              className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-secondary/5 text-secondary/60 hover:bg-primary/10 hover:text-primary transition-all flex items-center justify-center"
+              className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-secondary/5 text-secondary/60 hover:bg-primary/10 hover:text-primary transition-all flex items-center justify-center shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <div className="flex items-center gap-2">
-              <Library className="h-5 w-5 text-primary hidden sm:block" />
-              <span className="font-black text-secondary tracking-tight uppercase italic text-xs md:text-sm">Learning Center</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <Library className="h-5 w-5 text-primary hidden sm:block shrink-0" />
+              <span className="font-black text-secondary tracking-tight uppercase italic text-xs md:text-sm truncate">Learning Center</span>
             </div>
           </div>
           <LanguageSelector currentLang={session.language} />
@@ -106,12 +106,12 @@ export default async function StudentStudyPage() {
         </div>
 
         {/* Categories Bar */}
-        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-4 scrollbar-hide no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
-          <div className="flex h-10 md:h-12 items-center gap-2 px-4 md:px-6 rounded-xl md:rounded-2xl bg-secondary text-white text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
+        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-4 scrollbar-hide no-scrollbar w-full">
+          <div className="flex h-10 md:h-12 shrink-0 items-center gap-2 px-4 md:px-6 rounded-xl md:rounded-2xl bg-secondary text-white text-[8px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
             <Filter className="h-3 w-3 md:h-4 md:w-4 text-primary" /> All Modules
           </div>
           {["Philosophy", "Case Studies", "Multimedia", "Archives"].map((cat) => (
-            <button key={cat} className="flex h-10 md:h-12 items-center px-6 md:px-8 rounded-xl md:rounded-2xl bg-white border border-orange-100 text-secondary/40 text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:border-primary hover:text-primary hover:bg-primary/5 transition-all whitespace-nowrap">
+            <button key={cat} className="flex h-10 md:h-12 shrink-0 items-center px-6 md:px-8 rounded-xl md:rounded-2xl bg-white border border-orange-100 text-secondary/40 text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:border-primary hover:text-primary hover:bg-primary/5 transition-all whitespace-nowrap">
               {cat}
             </button>
           ))}

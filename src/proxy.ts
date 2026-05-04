@@ -7,7 +7,9 @@ function isProtectedStaffPath(pathname: string) {
 }
 
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next();
+  const response = NextResponse.next({
+    request,
+  });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -18,6 +20,7 @@ export async function proxy(request: NextRequest) {
       getAll: () => request.cookies.getAll(),
       setAll: (cookiesToSet) => {
         for (const { name, value, options } of cookiesToSet) {
+          request.cookies.set(name, value);
           response.cookies.set(name, value, options);
         }
       },

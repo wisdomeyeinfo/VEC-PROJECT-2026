@@ -70,9 +70,10 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  body {
+  html, body {
     background-color: var(--background);
     color: var(--foreground);
+    overflow-x: hidden;
     @apply antialiased;
   }
 

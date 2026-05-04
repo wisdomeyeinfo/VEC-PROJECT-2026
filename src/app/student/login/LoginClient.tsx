@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { studentLogin } from "./actions";
 import { GraduationCap, Key, User, ArrowRight, Loader2, Sparkles, Eye, EyeOff } from "lucide-react";
@@ -98,7 +99,7 @@ export function LoginClient() {
         </button>
       </form>
 
-      <div className="flex flex-col items-center gap-4 pt-4">
+      <div className="flex flex-col items-center gap-6 pt-4">
         <div className="flex items-center gap-2 text-secondary/20">
           <div className="h-px w-8 bg-orange-100" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em]">Help & Support</span>
@@ -112,6 +113,14 @@ export function LoginClient() {
             <Sparkles className="h-3 w-3 text-teal-400" /> 10-digit ID
           </div>
         </div>
+
+        {/* Discreet Staff Access */}
+        <Link 
+          href="/staff/login" 
+          className="text-[9px] font-black text-secondary/10 uppercase tracking-[0.3em] hover:text-orange-300 transition-colors mt-4"
+        >
+          Administration
+        </Link>
       </div>
     </div>
   );

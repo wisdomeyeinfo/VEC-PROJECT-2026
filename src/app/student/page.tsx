@@ -8,7 +8,7 @@ import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import {
   BookOpen, Trophy, LogOut, MessageCircle, ArrowRight,
   Video, Bell, Calendar, ExternalLink, ClipboardList,
-  Star, Sparkles, Zap,
+  Star, Sparkles, Zap, Library, User
 } from "lucide-react";
 
 export default async function StudentHomePage() {
@@ -126,31 +126,33 @@ export default async function StudentHomePage() {
         </section>
 
         {/* ── 4 Action Cards ── */}
-        <section className="space-y-3">
-          <h2 className="text-[10px] font-black text-secondary/30 uppercase tracking-[0.2em]">Your Learning Zone</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <section className="space-y-4">
+          <h2 className="text-[9px] font-black text-secondary/20 uppercase tracking-[0.3em] flex items-center gap-2">
+             <Library className="h-3 w-3" /> Learning Portal
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {[
-              { href: "/student/study",   label: "Study Modules", sub: "Read & Learn",    Icon: BookOpen,      img: "/assets/study_art.png",  colors: "from-purple-500 to-violet-700", shadow: "shadow-purple-400/30" },
-              { href: "/student/exam",    label: "Final Exam",    sub: "Take Assessment", Icon: ClipboardList, img: "/assets/exam_art.png",   colors: "from-teal-400 to-teal-700",    shadow: "shadow-teal-400/30" },
-              { href: "/student/results", label: "My Results",    sub: "View Scores",     Icon: Trophy,        img: "/assets/trophy_art.png", colors: "from-amber-400 to-orange-600", shadow: "shadow-amber-400/30" },
-              { href: "/student/profile", label: "Profile",       sub: "My Account",      Icon: Star,          img: "/assets/mascot_owl.png", colors: "from-pink-400 to-rose-600",    shadow: "shadow-pink-400/30" },
+              { href: "/student/study",   label: "Study Center", sub: "Interactive Modules", Icon: BookOpen,      img: "/assets/study_art.png",  colors: "from-purple-500 to-indigo-600", shadow: "shadow-purple-500/20" },
+              { href: "/student/exam",    label: "Final Exam",   sub: "Take Assessment",   Icon: ClipboardList, img: "/assets/exam_art.png",   colors: "from-teal-400 to-emerald-600", shadow: "shadow-teal-500/20" },
+              { href: "/student/results", label: "My Results",   sub: "Achievements",      Icon: Trophy,        img: "/assets/trophy_art.png", colors: "from-orange-400 to-rose-500", shadow: "shadow-orange-500/20" },
+              { href: "/student/profile", label: "My Profile",   sub: "Account Settings",  Icon: User,          img: "/assets/mascot_owl.png", colors: "from-pink-400 to-pink-600",    shadow: "shadow-pink-500/20" },
             ].map(({ href, label, sub, Icon, img, colors, shadow }) => (
               <Link
                 key={href}
                 href={href}
-                className={`group relative rounded-[1.75rem] overflow-hidden bg-gradient-to-br ${colors} p-5 shadow-xl ${shadow} flex flex-col justify-between h-40 lg:h-48 transition-all hover:scale-[1.02] active:scale-95`}
+                className={`group relative rounded-[2rem] overflow-hidden bg-gradient-to-br ${colors} p-4 md:p-6 shadow-2xl ${shadow} flex flex-col justify-between h-44 lg:h-56 transition-all hover:scale-[1.03] active:scale-95`}
               >
-                <div className="absolute -bottom-3 -right-3 opacity-20 group-hover:opacity-30 transition-opacity group-hover:scale-110 duration-500">
-                  <Image src={img} alt={label} width={80} height={80} className="object-contain" />
+                <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:opacity-40 transition-all group-hover:scale-110 duration-700">
+                  <Image src={img} alt={label} width={100} height={100} className="object-contain" />
                 </div>
-                <div className="h-10 w-10 rounded-2xl bg-white/20 flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-white" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10">
+                  <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <div>
-                  <p className="text-white font-black text-base leading-tight">{label}</p>
-                  <div className="flex items-center gap-1 mt-1 text-white/70 text-[10px] font-black uppercase tracking-wider">
-                    {sub} <ArrowRight className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
+                <div className="relative z-10">
+                  <p className="text-white font-black text-sm md:text-xl leading-tight italic tracking-tighter">{label}</p>
+                  <p className="text-white/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest mt-1">
+                    {sub}
+                  </p>
                 </div>
               </Link>
             ))}

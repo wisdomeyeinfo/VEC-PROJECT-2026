@@ -5,10 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Lock, Mail, Loader2, Sparkles, AlertCircle } from "lucide-react";
 
+function getSafeStaffNext(next: string | null) {
+  if (!next?.startsWith("/staff")) return "/staff";
+  if (next.startsWith("//")) return "/staff";
+  return next;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = useMemo(() => searchParams.get("next") || "/staff", [searchParams]);
+  const nextPath = useMemo(() => getSafeStaffNext(searchParams.get("next")), [searchParams]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +35,8 @@ export function LoginForm() {
       if (signInError) throw signInError;
       router.replace(nextPath);
       router.refresh();
-    } catch (err: any) {
-      setError(err?.message || "Login failed. Please check your credentials.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Login failed. Please check your credentials.");
     } finally {
       setSubmitting(false);
     }

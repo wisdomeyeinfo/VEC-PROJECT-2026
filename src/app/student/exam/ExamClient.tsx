@@ -281,7 +281,7 @@ export function ExamClient() {
         </div>
 
         {/* Action Button */}
-        <div className="p-5 md:p-6 border-t border-orange-50">
+        <div className="p-5 md:p-6 border-t border-orange-50 pb-28 md:pb-6">
           <button
             onClick={submit}
             disabled={saving}
@@ -295,7 +295,7 @@ export function ExamClient() {
       {/* Main Examination Area */}
       <main className="flex-1 space-y-4 md:space-y-6 w-full">
         {/* Sticky Header with Timer */}
-        <div className="sticky top-[72px] md:top-24 z-30 flex items-center justify-between bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border border-orange-50 shadow-xl shadow-orange-900/5">
+        <div className="sticky top-[10px] md:top-24 z-30 flex items-center justify-between bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border border-orange-50 shadow-xl shadow-orange-900/5">
           <div className="flex items-center gap-3 md:gap-4">
             <button 
               onClick={() => setShowPalette(true)}

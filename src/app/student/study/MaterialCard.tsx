@@ -58,7 +58,7 @@ export function MaterialCard({ material }: { material: Material }) {
             href={material.url} 
             target="_blank" 
             rel="noreferrer"
-            className="inline-flex h-9 md:h-12 items-center justify-center px-4 md:px-6 rounded-lg md:rounded-xl bg-secondary text-white font-black text-[10px] md:text-sm transition-all hover:bg-black group-hover:bg-primary shadow-lg shadow-secondary/10 w-full sm:w-auto"
+            className="inline-flex h-9 md:h-12 items-center justify-center px-4 md:px-6 rounded-lg md:rounded-xl bg-secondary text-white font-black text-[10px] md:text-sm transition-all hover:bg-black group-hover:bg-primary shadow-lg shadow-secondary/10 w-fit sm:w-auto"
           >
             <Icon className="h-3 w-3 md:h-4 md:w-4 mr-2" />
             <span className="uppercase tracking-widest">

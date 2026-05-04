@@ -40,7 +40,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
   // Authenticated pages — sidebar on desktop, bottom nav on mobile
   return (
-    <div className="flex min-h-dvh bg-[#FFF8F0]">
+    <div className="flex min-h-dvh bg-[#FFF8F0] overflow-x-hidden">
 
       {/* ===== DESKTOP SIDEBAR ===== */}
       <aside className="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 z-40 bg-white border-r border-orange-100 shadow-xl shadow-orange-900/5">
@@ -101,16 +101,16 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ===== MAIN CONTENT ===== */}
-      <main className="flex-1 lg:ml-64 min-h-dvh">
-        {/* On mobile add bottom padding so content isn't hidden behind bottom nav */}
-        <div className="lg:pb-0 pb-24">
+      <main className="flex-1 min-w-0 w-full lg:ml-64 min-h-dvh">
+        {/* On mobile add substantial bottom padding so content isn't hidden behind bottom nav */}
+        <div className="lg:pb-0 pb-36">
           {children}
         </div>
       </main>
 
       {/* ===== MOBILE BOTTOM NAV ===== */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bottom-nav">
-        <div className="mx-3 mb-3 rounded-3xl bg-white/95 backdrop-blur-2xl border border-orange-100 shadow-2xl shadow-orange-900/20 px-2 py-1.5">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+        <div className="mx-4 mb-5 rounded-3xl bg-white/95 backdrop-blur-2xl border border-orange-100 shadow-2xl shadow-orange-900/30 px-2 py-1.5 pointer-events-auto">
           <div className="grid grid-cols-5 gap-1">
             {navItems.map(({ href, label, Icon, color }) => {
               const isActive = href === "/student"
@@ -120,14 +120,14 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={href}
                   href={href}
-                  className={`flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-2xl transition-all duration-200 ${
+                  className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl transition-all duration-300 ${
                     isActive
-                      ? `bg-gradient-to-br ${color} text-white shadow-lg scale-105`
-                      : "text-secondary/40 hover:text-secondary"
+                      ? `bg-gradient-to-br ${color} text-white shadow-lg scale-105 -translate-y-1`
+                      : "text-secondary/40 hover:text-secondary hover:bg-orange-50/50"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className={`text-[8px] font-black uppercase tracking-widest leading-none ${isActive ? "text-white" : ""}`}>
+                  <Icon className={`h-5 w-5 ${isActive ? "animate-pulse" : ""}`} />
+                  <span className={`text-[7px] font-black uppercase tracking-widest leading-none ${isActive ? "text-white" : ""}`}>
                     {label}
                   </span>
                 </Link>

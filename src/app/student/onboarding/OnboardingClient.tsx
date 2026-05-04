@@ -56,16 +56,30 @@ export function OnboardingClient({ initialData, availableLocations, availableSch
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   // Derive unique states and districts
-  const states = useMemo(() => Array.from(new Set(availableLocations.map(l => l.state))).sort(), [availableLocations]);
+  const states = useMemo(() => Array.from(new Set(availableLocations.map(l => l.state).filter(Boolean))).sort(), [availableLocations]);
   
   const districts = useMemo(() => {
-    if (!formDataState.state) return [];
-    return Array.from(new Set(availableLocations.filter(l => l.state.toLowerCase() === formDataState.state.toLowerCase()).map(l => l.district))).sort();
+    const currentState = (formDataState.state || "").toLowerCase();
+    if (!currentState) return [];
+    return Array.from(new Set(
+      availableLocations
+        .filter(l => (l.state || "").toLowerCase() === currentState)
+        .map(l => l.district)
+        .filter(Boolean)
+    )).sort();
   }, [formDataState.state, availableLocations]);
 
   const filteredSchools = useMemo(() => {
-    if (!formDataState.district) return [];
-    return availableSchools.filter(s => s.district.toLowerCase() === formDataState.district.toLowerCase() && s.state.toLowerCase() === formDataState.state.toLowerCase()).sort((a, b) => a.name.localeCompare(b.name));
+    const currentDistrict = (formDataState.district || "").toLowerCase();
+    const currentState = (formDataState.state || "").toLowerCase();
+    if (!currentDistrict || !currentState) return [];
+    
+    return availableSchools
+      .filter(s => 
+        (s.district || "").toLowerCase() === currentDistrict && 
+        (s.state || "").toLowerCase() === currentState
+      )
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }, [formDataState.district, formDataState.state, availableSchools]);
 
   // Real-time password validation
