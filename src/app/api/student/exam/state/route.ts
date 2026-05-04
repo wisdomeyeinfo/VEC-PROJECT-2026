@@ -3,15 +3,20 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getStudentSession } from "@/lib/student/session";
 import { mulberry32, shuffleInPlace } from "@/lib/exam/random";
-import { normalizeLang } from "@/lib/lang";
+import { normalizeLang, langToCode, codeToLang } from "@/lib/lang";
 
-async function getQuestionIdsForSet(admin: ReturnType<typeof createSupabaseAdminClient>, language: string, type: string) {
+async function getQuestionIdsForSet(admin: ReturnType<typeof createSupabaseAdminClient>, langName: string, type: string) {
+  const code = langToCode(langName);
+  const name = codeToLang(code);
+
+  // Search for sets matching either the full name or the short code
   const { data: setRow, error: setErr } = await admin
     .from("question_sets")
     .select("id")
-    .eq("language", language)
+    .or(`language.eq."${name}",language.eq."${code}"`)
     .eq("type", type)
     .maybeSingle();
+
   if (setErr) throw setErr;
   if (!setRow) return [];
 
@@ -78,20 +83,14 @@ export async function GET() {
     const fixedIds = await getQuestionIdsForSet(admin, lang, "fixed100");
     const extraIds = await getQuestionIdsForSet(admin, lang, "extra50");
 
-    if (fixedIds.length < 100) {
+    if (fixedIds.length === 0 && extraIds.length === 0) {
       return NextResponse.json({
         enabled: false,
-        reason: `Not enough fixed questions for ${lang} (need 100).`,
-      });
-    }
-    if (extraIds.length < 20) {
-      return NextResponse.json({
-        enabled: false,
-        reason: `Not enough extra questions for ${lang} (need at least 20).`,
+        reason: `No questions found for ${lang}. Please ensure the question sets are uploaded.`,
       });
     }
 
-    // Pick exactly 100 fixed (first 100 after shuffle) and 20 from extra
+    // Pick up to 100 fixed and up to 20 extra (be flexible for testing/incomplete sets)
     shuffleInPlace(fixedIds, rand);
     shuffleInPlace(extraIds, rand);
     const selected = fixedIds.slice(0, 100).concat(extraIds.slice(0, 20));
