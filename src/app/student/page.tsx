@@ -3,29 +3,22 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getStudentSession } from "@/lib/student/session";
-import { t } from "@/lib/i18n/student";
 import { markWhatsappJoined, studentSignOut } from "./actions";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
-import { 
-  BookOpen, 
-  Trophy, 
-  Star, 
-  LogOut, 
-  MessageCircle, 
-  GraduationCap,
+import {
+  BookOpen,
+  Trophy,
+  LogOut,
+  MessageCircle,
   ArrowRight,
-  User,
   Video,
   Bell,
   Calendar,
   ExternalLink,
-  ChevronRight,
-  LayoutDashboard,
   ClipboardList,
-  Medal,
-  Award,
-  Book,
-  FileText
+  Star,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 
 export default async function StudentHomePage() {
@@ -33,311 +26,275 @@ export default async function StudentHomePage() {
   if (!session) redirect("/student/login");
 
   const admin = createSupabaseAdminClient();
-  
-  // 1. Fetch student profile (Safely)
-  const { data: student } = await admin.from("students")
+
+  const { data: student } = await admin
+    .from("students")
     .select("id, name, district, school_id, class, division, language, mobile, activation_code, team_id")
     .eq("id", session.student_id)
     .single();
 
-  // 2. Safely fetch data
   let team = null;
-  let announcements = [];
-  let liveClasses = [];
+  let announcements: any[] = [];
+  let liveClasses: any[] = [];
 
   try {
-    const { data: tRow } = await admin.from("teams").select("*").eq("id", session.team_id).maybeSingle();
-    team = tRow;
-  } catch (e) {}
+    const { data } = await admin.from("teams").select("*").eq("id", session.team_id).maybeSingle();
+    team = data;
+  } catch {}
 
   try {
-    const { data: aRows } = await admin.from("announcements").select("*").eq("active", true).order("created_at", { ascending: false }).limit(3);
-    announcements = aRows || [];
-  } catch (e) {}
+    const { data } = await admin.from("announcements").select("*").eq("active", true).order("created_at", { ascending: false }).limit(3);
+    announcements = data || [];
+  } catch {}
 
   try {
-    const { data: lRows } = await admin.from("live_classes").select("*").eq("active", true).order("scheduled_at", { ascending: true });
-    liveClasses = lRows || [];
-  } catch (e) {}
+    const { data } = await admin.from("live_classes").select("*").eq("active", true).order("scheduled_at", { ascending: true });
+    liveClasses = data || [];
+  } catch {}
 
   const whatsappUrl = team?.whatsapp_invite_url || null;
   const lang = session.language;
+  const firstName = student?.name?.split(" ")[0] || "Student";
 
   return (
-    <div className="relative min-h-dvh bg-[#FCFBFA] selection:bg-primary/30 pb-32">
-      {/* Background Accents */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
+    <div className="relative min-h-dvh bg-[#FFF8F0] overflow-x-hidden">
+
+      {/* Decorative background blobs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-0">
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-orange-400/10 rounded-full blur-[80px]" />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-400/10 rounded-full blur-[80px]" />
+        <div className="absolute -bottom-20 right-10 w-72 h-72 bg-teal-400/10 rounded-full blur-[80px]" />
       </div>
 
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-40 w-full glass border-b border-orange-100">
-        <div className="mx-auto max-w-7xl px-6 h-20 flex items-center justify-between">
+      {/* ── Header ── */}
+      <header className="relative z-10 w-full bg-white/80 backdrop-blur-xl border-b border-orange-100 sticky top-0">
+        <div className="mx-auto max-w-2xl px-5 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-secondary flex items-center justify-center shadow-2xl">
-              <GraduationCap className="h-7 w-7 text-primary" />
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-300/50">
+              <Star className="h-5 w-5 text-white fill-white" />
             </div>
-            <div>
-               <span className="block font-black text-2xl text-secondary tracking-tighter italic leading-none uppercase">VEC 2026</span>
-               <span className="text-[10px] font-black text-primary uppercase tracking-widest">Student Dashboard</span>
+            <div className="leading-none">
+              <span className="block font-black text-secondary text-base tracking-tight">VEC 2026</span>
+              <span className="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em]">Value Education</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link 
-              href="/student/profile"
-              className="h-12 w-12 rounded-2xl bg-white border border-orange-100 flex items-center justify-center text-secondary hover:text-primary hover:bg-primary/5 transition-all shadow-sm"
-            >
-              <User className="h-6 w-6" />
-            </Link>
+          <div className="flex items-center gap-2">
             <LanguageSelector currentLang={lang} />
             <form action={studentSignOut}>
-              <button className="h-12 w-12 rounded-2xl bg-white border border-orange-100 flex items-center justify-center text-secondary/40 hover:text-red-500 hover:bg-red-50 transition-all shadow-sm">
-                <LogOut className="h-6 w-6" />
+              <button className="h-9 w-9 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all">
+                <LogOut className="h-4 w-4" />
               </button>
             </form>
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 pt-12 space-y-16">
-        {/* Professional Welcome Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
-              <ClipboardList className="h-4 w-4 fill-primary" /> {t(lang, "welcomeBack")}
-            </div>
-            <h1 className="text-6xl md:text-7xl font-black text-secondary leading-[1.05] tracking-tighter">
-              Namaste, <br />
-              <span className="text-gradient-primary italic">{student?.name || "Student"}!</span>
-            </h1>
-            <p className="text-xl text-secondary/60 font-medium leading-relaxed max-w-xl">
-              Your learning journey continues. Complete your study modules, attend official webinars, and prepare for the final assessment.
-            </p>
-            
-            {/* Academic Stats */}
-            <div className="flex flex-wrap gap-6 pt-4">
-               <div className="flex items-center gap-4 p-4 rounded-3xl bg-white shadow-xl shadow-orange-900/5 border border-orange-100">
-                  <div className="h-12 w-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
-                     <Medal className="h-6 w-6" />
-                  </div>
-                  <div>
-                     <span className="block font-black text-secondary">Verified Student</span>
-                     <span className="text-[10px] font-black text-secondary/40 uppercase tracking-widest">Enrollment Status</span>
-                  </div>
-               </div>
-               <div className="flex items-center gap-4 p-4 rounded-3xl bg-white shadow-xl shadow-orange-900/5 border border-orange-100">
-                  <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                     <Book className="h-6 w-6" />
-                  </div>
-                  <div>
-                     <span className="block font-black text-secondary">Course Modules</span>
-                     <span className="text-[10px] font-black text-secondary/40 uppercase tracking-widest">In Progress</span>
-                  </div>
-               </div>
-            </div>
+      <main className="relative z-10 mx-auto max-w-2xl px-5 py-6 space-y-7">
+
+        {/* ── Welcome Hero ── */}
+        <section className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-orange-500 via-orange-400 to-amber-400 p-6 shadow-2xl shadow-orange-400/30">
+          {/* Decorative stars */}
+          <div className="absolute top-4 right-4 opacity-30">
+            <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <div className="lg:col-span-5 relative">
-            <div className="absolute inset-0 bg-primary/5 rounded-[4rem] rotate-6 scale-90 blur-xl opacity-50" />
-            <div className="relative aspect-square rounded-[4rem] overflow-hidden bg-white shadow-3xl border border-orange-100 p-8">
-              <Image 
-                src="/assets/hero_wisdom.png" 
-                alt="Value Education Dashboard" 
-                fill 
-                className="object-contain drop-shadow-2xl animate-float p-10"
+          <div className="absolute bottom-4 left-32 opacity-20">
+            <Star className="h-6 w-6 text-white fill-white" />
+          </div>
+
+          <div className="flex items-end gap-4">
+            <div className="flex-1">
+              <p className="text-orange-100 text-xs font-black uppercase tracking-[0.2em] mb-1">Namaste 🙏</p>
+              <h1 className="text-3xl font-black text-white leading-tight">
+                {firstName}!
+              </h1>
+              <p className="text-orange-100 text-sm font-medium mt-1 leading-relaxed">
+                Ready to learn &amp; grow today?
+              </p>
+              {student?.class && (
+                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-widest">
+                  <Zap className="h-3 w-3" /> Class {student.class}
+                  {student.division ? ` – ${student.division}` : ""}
+                </div>
+              )}
+            </div>
+            <div className="relative w-28 h-28 shrink-0 animate-float-slow">
+              <Image
+                src="/assets/mascot_owl.png"
+                alt="Wisdom Owl"
+                fill
+                className="object-contain drop-shadow-2xl"
               />
             </div>
           </div>
         </section>
 
-        {/* Learning Center Hub */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3">
-            <LayoutDashboard className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-black text-secondary tracking-tighter italic uppercase">Learning Center</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {/* Study Modules */}
-            <Link
-              href="/student/study"
-              className="group relative overflow-hidden rounded-[4rem] bg-white border border-orange-100 p-10 shadow-2xl transition-all hover:-translate-y-2 hover:shadow-primary/20"
-            >
-              <div className="flex flex-col h-full justify-between relative z-10">
-                <div className="space-y-6">
-                  <div className="h-20 w-20 rounded-[2rem] bg-blue-50 text-blue-500 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all shadow-inner">
-                    <BookOpen className="h-10 w-10" />
-                  </div>
-                  <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-secondary">Study Modules</h3>
-                    <p className="text-secondary/60 font-medium leading-relaxed">Access comprehensive literature and story-based modules for character building.</p>
-                  </div>
-                </div>
-                <div className="mt-10 flex items-center gap-3 text-xs font-black text-blue-600 uppercase tracking-[0.2em] group-hover:gap-5 transition-all">
-                  Access Modules <ArrowRight className="h-5 w-5" />
-                </div>
+        {/* ── Main Action Cards ── */}
+        <section className="space-y-3">
+          <h2 className="text-xs font-black text-secondary/40 uppercase tracking-[0.2em] px-1">Your Learning Zone</h2>
+          <div className="grid grid-cols-2 gap-4">
+
+            {/* Study */}
+            <Link href="/student/study" className="group relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-purple-500 to-violet-700 p-5 shadow-xl shadow-purple-400/30 flex flex-col justify-between h-44 transition-all hover:scale-[1.02] active:scale-95">
+              <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:opacity-30 transition-opacity">
+                <BookOpen className="h-24 w-24 text-white" />
               </div>
-              <div className="absolute top-0 right-0 w-48 h-full opacity-5 grayscale group-hover:grayscale-0 group-hover:opacity-30 transition-all scale-110 group-hover:scale-125 duration-700">
-                <Image src="/assets/book_thumb.png" alt="Study" fill className="object-contain object-right" />
+              <div className="h-11 w-11 rounded-2xl bg-white/20 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg leading-tight">Study<br />Modules</h3>
+                <div className="flex items-center gap-1 mt-1 text-purple-200 text-[10px] font-black uppercase tracking-widest">
+                  Start <ArrowRight className="h-3 w-3" />
+                </div>
               </div>
             </Link>
 
-            {/* National Examination */}
-            <Link
-              href="/student/exam"
-              className="group relative overflow-hidden rounded-[4rem] bg-white border border-orange-100 p-10 shadow-2xl transition-all hover:-translate-y-2 hover:shadow-primary/20"
-            >
-              <div className="flex flex-col h-full justify-between relative z-10">
-                <div className="space-y-6">
-                  <div className="h-20 w-20 rounded-[2rem] bg-orange-50 text-orange-500 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-all shadow-inner">
-                    <FileText className="h-10 w-10" />
-                  </div>
-                  <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-secondary">Final Assessment</h3>
-                    <p className="text-secondary/60 font-medium leading-relaxed">The official national examination to validate your learning and character development.</p>
-                  </div>
-                </div>
-                <div className="mt-10 flex items-center gap-3 text-xs font-black text-orange-600 uppercase tracking-[0.2em] group-hover:gap-5 transition-all">
-                  Take Final Exam <ArrowRight className="h-5 w-5" />
-                </div>
+            {/* Exam */}
+            <Link href="/student/exam" className="group relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 p-5 shadow-xl shadow-teal-400/30 flex flex-col justify-between h-44 transition-all hover:scale-[1.02] active:scale-95">
+              <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:opacity-30 transition-opacity">
+                <ClipboardList className="h-24 w-24 text-white" />
               </div>
-              <div className="absolute top-0 right-0 w-48 h-full opacity-5 grayscale group-hover:grayscale-0 group-hover:opacity-30 transition-all scale-110 group-hover:scale-125 duration-700">
-                <Image src="/assets/badge.png" alt="Examination" fill className="object-contain object-right" />
+              <div className="h-11 w-11 rounded-2xl bg-white/20 flex items-center justify-center">
+                <ClipboardList className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg leading-tight">Final<br />Exam</h3>
+                <div className="flex items-center gap-1 mt-1 text-teal-100 text-[10px] font-black uppercase tracking-widest">
+                  Attempt <ArrowRight className="h-3 w-3" />
+                </div>
               </div>
             </Link>
-          </div>
-        </section>
 
-        {/* Notifications & Live Lectures */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Announcements Card */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="flex items-center gap-3">
-              <Bell className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-black text-secondary tracking-tighter uppercase italic">Important Announcements</h2>
-            </div>
-            <div className="grid gap-6">
-              {announcements.map((msg: any) => (
-                <div key={msg.id} className="p-8 rounded-[2.5rem] bg-white border border-orange-100 shadow-xl flex gap-8 group card-premium">
-                  <div className="h-16 w-16 shrink-0 rounded-3xl bg-orange-50 flex items-center justify-center text-secondary/40 group-hover:bg-primary group-hover:text-white transition-colors">
-                    <MessageCircle className="h-8 w-8" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-black text-secondary">{msg.title}</h3>
-                    <p className="text-secondary/60 font-medium leading-relaxed line-clamp-2">{msg.content}</p>
-                    <div className="flex items-center gap-2 pt-2">
-                       <span className="text-[10px] font-black text-secondary/30 uppercase tracking-widest">{new Date(msg.created_at).toLocaleDateString()}</span>
-                       <span className="h-1 w-1 rounded-full bg-orange-100" />
-                       <span className="text-[10px] font-black text-primary uppercase tracking-widest">Official</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {announcements.length === 0 && (
-                <div className="p-16 text-center rounded-[3rem] bg-orange-50/30 border-2 border-dashed border-orange-100 space-y-4">
-                  <Bell className="h-10 w-10 text-orange-200 mx-auto" />
-                  <p className="text-secondary/40 font-bold">No new announcements at this time.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Live Lectures Card */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="flex items-center gap-3">
-              <Video className="h-6 w-6 text-blue-500" />
-              <h2 className="text-2xl font-black text-secondary tracking-tighter uppercase italic">Online Lectures</h2>
-            </div>
-            <div className="space-y-6">
-              {liveClasses.map((cls: any) => (
-                <div key={cls.id} className="p-10 rounded-[3rem] bg-secondary text-white space-y-6 shadow-3xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform scale-150">
-                    <Video className="h-32 w-32" />
-                  </div>
-                  <div className="space-y-3 relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/10 text-primary text-[10px] font-black uppercase tracking-widest border border-white/5">
-                       <GraduationCap className="h-3 w-3" /> Live Session
-                    </div>
-                    <h3 className="text-2xl font-black leading-tight tracking-tight">{cls.title}</h3>
-                  </div>
-                  <div className="flex items-center gap-3 text-white/60 text-sm font-bold relative z-10 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <Calendar className="h-5 w-5 text-primary" /> 
-                    {new Date(cls.scheduled_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-                  </div>
-                  <a 
-                    href={cls.zoom_link} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="flex h-16 items-center justify-center rounded-[1.5rem] bg-primary text-white font-black text-lg hover:scale-[1.02] transition-all relative z-10 shadow-2xl active:scale-95"
-                  >
-                    Join Lecture <ExternalLink className="h-5 w-5 ml-3" />
-                  </a>
-                </div>
-              ))}
-              {liveClasses.length === 0 && (
-                <div className="p-16 rounded-[3rem] bg-orange-50/30 border-2 border-dashed border-orange-100 flex flex-col items-center text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center shadow-xl">
-                    <Video className="h-8 w-8 text-orange-200" />
-                  </div>
-                  <p className="text-sm font-bold text-secondary/40 px-6">New lecture schedules will be announced soon.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Results & Certification Section */}
-        <section className="bg-secondary rounded-[4rem] p-12 overflow-hidden relative shadow-3xl group">
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="space-y-6 max-w-xl text-center lg:text-left">
-              <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center mx-auto lg:mx-0">
-                 <Trophy className="h-8 w-8 text-primary" />
+            {/* Results */}
+            <Link href="/student/results" className="group relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 p-5 shadow-xl shadow-amber-400/30 flex flex-col justify-between h-44 transition-all hover:scale-[1.02] active:scale-95">
+              <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:opacity-30 transition-opacity">
+                <Trophy className="h-24 w-24 text-white" />
               </div>
-              <h2 className="text-5xl font-black text-white italic tracking-tighter leading-none">Results & Certificates</h2>
-              <p className="text-white/60 text-lg font-medium leading-relaxed">Official national rankings, scoring reports, and certified achievements are managed here.</p>
-              <Link 
-                href="/student/results" 
-                className="inline-flex h-20 px-14 rounded-3xl bg-primary text-white font-black text-xl items-center gap-4 shadow-2xl shadow-primary/40 transition-all hover:scale-[1.05] active:scale-95"
-              >
-                View My Results <ChevronRight className="h-6 w-6" />
-              </Link>
+              <div className="h-11 w-11 rounded-2xl bg-white/20 flex items-center justify-center">
+                <Trophy className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg leading-tight">My<br />Results</h3>
+                <div className="flex items-center gap-1 mt-1 text-orange-100 text-[10px] font-black uppercase tracking-widest">
+                  View <ArrowRight className="h-3 w-3" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Live Classes */}
+            <div className="group relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-pink-400 to-rose-600 p-5 shadow-xl shadow-pink-400/30 flex flex-col justify-between h-44">
+              <div className="absolute -bottom-4 -right-4 opacity-20">
+                <Video className="h-24 w-24 text-white" />
+              </div>
+              <div className="h-11 w-11 rounded-2xl bg-white/20 flex items-center justify-center">
+                <Video className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg leading-tight">Live<br />Classes</h3>
+                <div className="text-pink-100 text-[10px] font-black uppercase tracking-widest mt-1">
+                  {liveClasses.length > 0 ? `${liveClasses.length} Upcoming` : "Coming Soon"}
+                </div>
+              </div>
             </div>
-            <div className="relative h-72 w-72 md:h-80 md:w-80 group-hover:scale-110 transition-transform duration-700">
-               <div className="absolute inset-0 bg-primary/10 rounded-full blur-[80px]" />
-               <Image src="/assets/badge.png" alt="Official Certification" fill className="object-contain drop-shadow-3xl" />
-            </div>
+
           </div>
-          {/* Decoration */}
-          <div className="absolute -bottom-20 -left-20 h-80 w-80 bg-orange-500/5 rounded-full blur-[100px]" />
         </section>
 
-        {/* Community Engagement */}
-        {!session.whatsapp_joined && (
-          <section className="p-12 rounded-[4rem] bg-orange-50 border border-orange-100 flex flex-col lg:flex-row items-center gap-12 shadow-2xl shadow-orange-900/5 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-12 opacity-5">
-                <MessageCircle className="h-40 w-40 text-secondary" />
-             </div>
-             <div className="h-24 w-24 rounded-[2.5rem] bg-secondary flex items-center justify-center shadow-2xl shadow-secondary/30 shrink-0">
-                <MessageCircle className="h-12 w-12 text-primary" />
-             </div>
-             <div className="space-y-2 flex-1 text-center lg:text-left relative z-10">
-                <h2 className="text-4xl font-black text-secondary tracking-tighter italic">Official Student Group</h2>
-                <p className="text-secondary/60 font-medium text-lg">Join the official WhatsApp group for instant notifications and study support.</p>
-             </div>
-             <div className="flex flex-col gap-4 shrink-0 w-full lg:w-auto relative z-10">
-               <a href={whatsappUrl || "#"} className="h-16 px-12 rounded-[1.5rem] bg-secondary text-white font-black text-xl flex items-center justify-center gap-3 shadow-2xl shadow-secondary/30 hover:scale-[1.02] active:scale-95 transition-all">
-                 Join Group
-               </a>
-               <form action={markWhatsappJoined}>
-                  <button className="text-secondary/30 text-xs font-black uppercase tracking-[0.2em] hover:text-secondary transition-colors">I'm already in the group</button>
-               </form>
-             </div>
+        {/* ── Live Classes List ── */}
+        {liveClasses.length > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-xs font-black text-secondary/40 uppercase tracking-[0.2em] px-1">Upcoming Live Sessions</h2>
+            <div className="space-y-3">
+              {liveClasses.slice(0, 3).map((cls: any) => (
+                <a
+                  key={cls.id}
+                  href={cls.zoom_link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-4 p-4 rounded-[1.5rem] bg-white border border-orange-100 shadow-md shadow-orange-100/30 hover:shadow-lg hover:border-orange-200 transition-all group"
+                >
+                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center shadow-lg shadow-pink-300/30 shrink-0">
+                    <Video className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-secondary text-sm truncate">{cls.title}</p>
+                    <div className="flex items-center gap-1 text-secondary/40 text-[10px] font-bold mt-0.5">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(cls.scheduled_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                    </div>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-orange-400 shrink-0 group-hover:text-orange-600 transition-colors" />
+                </a>
+              ))}
+            </div>
           </section>
         )}
-      </main>
 
-      {/* Footer Line */}
-      <div className="fixed bottom-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-orange-400 to-secondary opacity-60" />
+        {/* ── Announcements ── */}
+        {announcements.length > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-xs font-black text-secondary/40 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5 text-orange-400" /> Announcements
+            </h2>
+            <div className="space-y-3">
+              {announcements.map((msg: any) => (
+                <div key={msg.id} className="flex gap-4 p-4 rounded-[1.5rem] bg-white border border-orange-100 shadow-md shadow-orange-100/30">
+                  <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                    <MessageCircle className="h-5 w-5 text-orange-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-secondary text-sm">{msg.title}</p>
+                    <p className="text-secondary/50 text-xs font-medium mt-0.5 line-clamp-2">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── WhatsApp CTA ── */}
+        {!session.whatsapp_joined && whatsappUrl && (
+          <section className="rounded-[2rem] bg-gradient-to-br from-green-400 to-emerald-600 p-6 shadow-xl shadow-green-400/20 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                <MessageCircle className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg">Join Our Group!</h3>
+                <p className="text-green-100 text-xs font-medium">Get instant updates on WhatsApp</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <a
+                href={whatsappUrl}
+                className="flex-1 h-12 rounded-2xl bg-white text-green-700 font-black text-sm flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Join WhatsApp
+              </a>
+              <form action={markWhatsappJoined}>
+                <button className="h-12 px-4 rounded-2xl bg-white/20 text-white font-bold text-xs border border-white/30 hover:bg-white/30 transition-all">
+                  Already In
+                </button>
+              </form>
+            </div>
+          </section>
+        )}
+
+        {/* ── Stats Bar ── */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Verified", value: "✓", color: "from-green-400 to-emerald-500" },
+            { label: lang?.toUpperCase() || "EN", value: "Lang", color: "from-blue-400 to-blue-600" },
+            { label: "2026", value: "VEC", color: "from-orange-400 to-orange-600" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className={`rounded-2xl bg-gradient-to-br ${color} p-3 text-center shadow-lg`}>
+              <div className="text-white font-black text-lg leading-none">{value}</div>
+              <div className="text-white/80 text-[9px] font-black uppercase tracking-widest mt-1">{label}</div>
+            </div>
+          ))}
+        </div>
+
+      </main>
     </div>
   );
 }

@@ -1,61 +1,62 @@
 import Image from "next/image";
-import Link from "next/link";
 import { LoginClient } from "./LoginClient";
-import { ChevronLeft } from "lucide-react";
+import { Star, Sparkles } from "lucide-react";
 
 export default function StudentLoginPage() {
   return (
-    <div className="relative min-h-dvh bg-white flex flex-col items-center justify-center p-6 overflow-hidden">
-      {/* Background Decor */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-500/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/4" />
+    <div className="relative min-h-dvh bg-[#FFF8F0] flex flex-col overflow-hidden">
+
+      {/* === Colourful top wave / hero strip === */}
+      <div className="relative w-full bg-gradient-to-br from-orange-500 via-orange-400 to-amber-400 pt-12 pb-20 px-6 text-center overflow-hidden">
+        {/* floating blobs */}
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+        <div className="absolute top-4 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+
+        {/* Stars decoration */}
+        <div className="absolute top-6 left-6 opacity-60">
+          <Sparkles className="h-5 w-5 text-white" />
+        </div>
+        <div className="absolute top-8 right-8 opacity-40">
+          <Star className="h-4 w-4 text-yellow-200 fill-yellow-200" />
+        </div>
+
+        {/* Mascot */}
+        <div className="relative mx-auto w-36 h-36 animate-float">
+          <Image
+            src="/assets/mascot_owl.png"
+            alt="VEC Mascot"
+            fill
+            className="object-contain drop-shadow-2xl"
+            priority
+          />
+        </div>
+
+        <h1 className="mt-4 text-3xl font-black text-white leading-tight tracking-tight">
+          VEC 2026
+        </h1>
+        <p className="mt-1 text-orange-100 text-sm font-medium">
+          Right Values • Bright Future
+        </p>
       </div>
 
-      <main className="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Left Side: Illustrative */}
-        <div className="hidden lg:flex flex-col items-start space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
-          <div className="space-y-4">
-            <h1 className="text-7xl font-black text-zinc-900 leading-tight tracking-tighter">
-              Discover <br />
-              <span className="text-orange-600 italic">Values</span> <br />
-              For Life.
-            </h1>
-            <p className="text-xl text-zinc-500 font-medium max-w-md leading-relaxed">
-              Join thousands of students in the 2026 Value Education Contest. Learn, grow, and lead with wisdom.
-            </p>
-          </div>
-          
-          <div className="relative aspect-square w-full max-w-sm rounded-[4rem] overflow-hidden bg-orange-50 border border-orange-100 p-8 group shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-tr from-orange-200/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Image 
-              src="/assets/hero_wisdom.png" 
-              alt="Wisdom" 
-              fill 
-              className="object-contain p-10 animate-float drop-shadow-2xl"
-            />
+      {/* === Curved white card slide up over the hero === */}
+      <div className="relative z-10 -mt-10 flex-1 bg-[#FFF8F0] rounded-t-[2.5rem] px-6 pt-8 pb-10 shadow-[0_-4px_30px_rgba(0,0,0,0.06)]">
+        <LoginClient />
+
+        <div className="mt-8 flex justify-center">
+          <div className="flex items-center gap-3 flex-wrap justify-center">
+            {[
+              { emoji: "📚", label: "Learn Values" },
+              { emoji: "🏆", label: "Win Prizes" },
+              { emoji: "🌟", label: "Grow Wise" },
+            ].map(({ emoji, label }) => (
+              <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100">
+                <span className="text-sm">{emoji}</span>
+                <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">{label}</span>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Right Side: Login Form */}
-        <div className="flex flex-col items-center">
-          <LoginClient />
-          
-          <div className="mt-12 flex items-center gap-6">
-            <Link 
-              href="/" 
-              className="flex items-center gap-2 text-sm font-black text-zinc-400 hover:text-zinc-900 transition-colors uppercase tracking-widest"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Back Home
-            </Link>
-          </div>
-        </div>
-      </main>
-
-      {/* Mobile Footer Decor */}
-      <div className="lg:hidden mt-12 opacity-30">
-        <Image src="/assets/badge.png" alt="Badge" width={64} height={64} />
       </div>
     </div>
   );
