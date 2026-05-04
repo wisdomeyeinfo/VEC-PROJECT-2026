@@ -113,7 +113,7 @@ export default async function TeamSubmissionsPage({
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-2 text-zinc-500 font-medium text-sm">
                         <School className="h-4 w-4" />
-                        {student.schools?.name || "Not Assigned"}
+                        {(student.schools as { name: string }[] | null)?.[0]?.name || "Not Assigned"}
                       </div>
                     </td>
                     <td className="px-8 py-5 text-center">

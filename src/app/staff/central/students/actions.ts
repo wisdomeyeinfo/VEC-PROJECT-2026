@@ -49,7 +49,7 @@ export async function generateStudents(formData: FormData) {
 /**
  * Resets a student's password to a new temporary one
  */
-export async function resetStudentPassword(studentId: string) {
+export async function resetStudentPassword(studentId: string): Promise<{ newTempPassword: string }> {
   const admin = createSupabaseAdminClient();
   const newTempPassword = generateTempPassword();
 
@@ -57,14 +57,15 @@ export async function resetStudentPassword(studentId: string) {
     .from("students")
     .update({
       temp_password: newTempPassword,
-      password_hash: null, // Clear the set password
-      onboarding_completed: false, // Force them to onboard again
+      password_hash: null,
+      onboarding_completed: false,
     })
     .eq("id", studentId);
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/staff/central/students");
+  return { newTempPassword };
 }
 
 /**
